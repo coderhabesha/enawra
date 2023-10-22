@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "778289130510",
+    "project_id": "enawra-20bd4",
+    "storage_bucket": "enawra-20bd4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:778289130510:android:6d44fea49ed1d742e1a05f",
+        "android_client_info": {
+          "package_name": "com.veldteck.enawra"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "778289130510-gsshouq4sta84eabq40j974o3imbqu08.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkW8safCorgWiLpNKHDZpnwnq1HUehe5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "778289130510-gsshouq4sta84eabq40j974o3imbqu08.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
