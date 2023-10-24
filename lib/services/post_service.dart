@@ -11,10 +11,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:uuid/uuid.dart';
 
 class PostService extends Service {
-  String postId = Uuid().v4();
-  String location;
-  Position position;
-  Placemark placemark;
+  String? postId = Uuid().v4();
+  String? location;
+  Position? position;
+  Placemark? placemark;
 
 //uploads profile picture to the users collection
   uploadProfilePicture(File image, User user) async {
@@ -36,20 +36,20 @@ class PostService extends Service {
     }
 
     DocumentSnapshot doc =
-        await usersRef.doc(firebaseAuth.currentUser.uid).get();
-    user = UserModel.fromJson(doc.data());
+        await usersRef.doc(firebaseAuth.currentUser!.uid).get();
+    user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
     var ref = postRef.doc();
     ref.set({
       "id": ref.id,
       "postId": ref.id,
-      "firstName": user.firstName,
-      "lastName": user.lastName,
-      "ownerId": firebaseAuth.currentUser.uid,
+      "firstName": user!.firstName,
+      "lastName": user!.lastName,
+      "ownerId": firebaseAuth.currentUser!.uid,
       "mediaUrl": link,
       "description": description ?? "",
       "location": loc ?? "enawra",
       "timestamp": Timestamp.now(),
-      "state": usersRef.doc(firebaseAuth.currentUser.uid)
+      "state": usersRef.doc(firebaseAuth.currentUser!.uid)
     }).catchError((e) {
       print(e);
     });
@@ -66,27 +66,27 @@ class PostService extends Service {
     } else {
       position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
-      List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+      List<Placemark> placemarks = await placemarkFromCoordinates(position!.latitude, position!.longitude);
       placemark = placemarks[0];
       location = " ${placemarks[0].locality}, ${placemarks[0].country}";
     }
 
-    return location;
+    return location!;
   }
 
   //uploads story to the story collection
   uploadStory(File image, String description) async {
     String link = await uploadImage(posts, image);
     DocumentSnapshot doc =
-        await usersRef.doc(firebaseAuth.currentUser.uid).get();
-    user = UserModel.fromJson(doc.data());
+        await usersRef.doc(firebaseAuth.currentUser!.uid).get();
+    user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
     var ref = storyRef.doc();
     ref.set({
       "id": ref.id,
       "postId": ref.id,
-      "firstName": user.firstName,
-      "lastName": user.lastName,
-      "ownerId": firebaseAuth.currentUser.uid,
+      "firstName": user!.firstName,
+      "lastName": user!.lastName,
+      "ownerId": firebaseAuth.currentUser!.uid,
       "mediaUrl": link,
       "description": description ?? "",
       "timestamp": Timestamp.now(),
@@ -103,20 +103,20 @@ class PostService extends Service {
     }
 
     DocumentSnapshot doc = await usersRef.doc(currentUserId).get();
-    user = UserModel.fromJson(doc.data());
+    user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
     await commentRef.doc(postId).collection("comments").add({
-      "firstName": user.firstName,
-      "lastName": user.lastName,
+      "firstName": user!.firstName,
+      "lastName": user!.lastName,
       "comment": comment,
       "timestamp": Timestamp.now(),
-      "userDp": user.photoUrl,
-      "userId": user.id,
+      "userDp": user!.photoUrl,
+      "userId": user!.id,
     });
     bool isNotMe = ownerId != currentUserId;
 
     if (isNotMe) {
-      addCommentToNotification("comment", comment, user.firstName,
-          user.lastName, user.id, postId, mediaUrl, ownerId, user.photoUrl);
+      addCommentToNotification("comment", comment, user!.firstName!,
+          user!.lastName!, user!.id!, postId, mediaUrl, ownerId, user!.photoUrl!);
     }
   }
 
@@ -155,7 +155,7 @@ class PostService extends Service {
       "type": type,
       "firstName": firstName,
       "lastName": lastName,
-      "userId": firebaseAuth.currentUser.uid,
+      "userId": firebaseAuth.currentUser!.uid,
       "userDp": userDp,
       "postId": postId,
       "mediaUrl": mediaUrl,
@@ -170,7 +170,7 @@ class PostService extends Service {
 
     if (isNotMe) {
       DocumentSnapshot doc = await usersRef.doc(currentUser).get();
-      user = UserModel.fromJson(doc.data());
+      user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
       notificationRef
           .doc(ownerId)
           .collection('notifications')

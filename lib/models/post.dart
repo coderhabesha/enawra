@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PostModel {
-  String id;
-  String postId;
-  String ownerId;
-  String firstName;
-  String lastName;
-  String location;
-  String description;
-  String mediaUrl;
-  Timestamp timestamp;
+  String? id;
+  String? postId;
+  String? ownerId;
+  String? firstName;
+  String? lastName;
+  String? location;
+  String? description;
+  String? mediaUrl;
+  Timestamp? timestamp;
   
 
   PostModel({

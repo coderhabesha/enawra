@@ -12,7 +12,7 @@ class Activities extends StatefulWidget {
 
 class _ActivitiesState extends State<Activities> {
   currentUserId() {
-    return firebaseAuth.currentUser.uid;
+    return firebaseAuth.currentUser!.uid;
   }
 
   @override
@@ -59,7 +59,7 @@ class _ActivitiesState extends State<Activities> {
           .snapshots(),
       physics: NeverScrollableScrollPhysics(),
       itemBuilder: (_, DocumentSnapshot snapshot) {
-        ActivityModel activities = ActivityModel.fromJson(snapshot.data());
+        ActivityModel activities = ActivityModel.fromJson(snapshot.data() as Map<String, dynamic>);
         return ActivityItems(
           activity: activities,
         );
@@ -70,7 +70,7 @@ class _ActivitiesState extends State<Activities> {
   deleteAllItems() async {
 //delete all notifications associated with the authenticated user
     QuerySnapshot notificationsSnap = await notificationRef
-        .doc(firebaseAuth.currentUser.uid)
+        .doc(firebaseAuth.currentUser!.uid)
         .collection('notifications')
         .get();
     notificationsSnap.docs.forEach(

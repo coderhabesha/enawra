@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:enawra/components/custom_card.dart';
+import 'package:ionicons/ionicons.dart';
 
 class PasswordFormBuilder extends StatefulWidget {
-  final String initialValue;
-  final bool enabled;
-  final String hintText;
-  final TextInputType textInputType;
-  final TextEditingController controller;
-  final TextInputAction textInputAction;
-  final FocusNode focusNode, nextFocusNode;
-  final VoidCallback submitAction;
+  final String? initialValue;
+  final bool? enabled;
+  final String? hintText;
+  final TextInputType? textInputType;
+  final TextEditingController? controller;
+  final TextInputAction? textInputAction;
+  final FocusNode? focusNode, nextFocusNode;
+  final VoidCallback? submitAction;
   final bool obscureText;
-  final FormFieldValidator<String> validateFunction;
-  final void Function(String) onSaved, onChange;
-  final Key key;
-  final IconData prefix;
-  final IconData suffix;
+  final FormFieldValidator<String>? validateFunction;
+  final void Function(String)? onSaved, onChange;
+  final Key? key;
+  final IconData? prefix, suffix;
 
   PasswordFormBuilder(
       {this.prefix,
@@ -41,7 +40,7 @@ class PasswordFormBuilder extends StatefulWidget {
 }
 
 class _PasswordFormBuilderState extends State<PasswordFormBuilder> {
-  String error;
+  String? error;
   bool obscureText = false;
 
   @override
@@ -57,15 +56,16 @@ class _PasswordFormBuilderState extends State<PasswordFormBuilder> {
               child: Theme(
                 data: ThemeData(
                   primaryColor: Theme.of(context).colorScheme.secondary,
-                  accentColor: Theme.of(context).colorScheme.secondary,
+                  colorScheme: ColorScheme.fromSwatch().copyWith(
+                      secondary: Theme.of(context).colorScheme.secondary),
                 ),
                 child: TextFormField(
                   initialValue: widget.initialValue,
                   enabled: widget.enabled,
                   onChanged: (val) {
-                    error = widget.validateFunction(val);
+                    error = widget.validateFunction!(val);
                     setState(() {});
-                    widget.onSaved(val);
+                    widget.onSaved!(val);
                   },
                   style: TextStyle(
                     fontSize: 15.0,
@@ -77,18 +77,18 @@ class _PasswordFormBuilderState extends State<PasswordFormBuilder> {
                   keyboardType: widget.textInputType,
                   validator: widget.validateFunction,
                   onSaved: (val) {
-                    error = widget.validateFunction(val);
+                    error = widget.validateFunction!(val);
                     setState(() {});
-                    widget.onSaved(val);
+                    widget.onSaved!(val!);
                   },
                   textInputAction: widget.textInputAction,
                   focusNode: widget.focusNode,
                   onFieldSubmitted: (String term) {
                     if (widget.nextFocusNode != null) {
-                      widget.focusNode.unfocus();
+                      widget.focusNode!.unfocus();
                       FocusScope.of(context).requestFocus(widget.nextFocusNode);
                     } else {
-                      widget.submitAction();
+                      widget.submitAction!();
                     }
                   },
                   decoration: InputDecoration(
@@ -101,7 +101,7 @@ class _PasswordFormBuilderState extends State<PasswordFormBuilder> {
                         setState(() => obscureText = !obscureText);
                       },
                       child: Icon(
-                        obscureText ? widget.suffix : Feather.eye_off,
+                        obscureText ? widget.suffix : Ionicons.eye_off,
                         size: 15.0,
                       ),
                     ),

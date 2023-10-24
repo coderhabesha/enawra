@@ -2,15 +2,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+// import 'package:flutter_icons/flutter_icons.dart';
 import 'package:enawra/models/post.dart';
 import 'package:enawra/models/user.dart';
 import 'package:enawra/utils/firebase.dart';
 import 'package:enawra/widgets/indicators.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ViewImage extends StatefulWidget {
-  final PostModel post;
+  final PostModel? post;
 
   ViewImage({this.post});
 
@@ -21,10 +22,10 @@ class ViewImage extends StatefulWidget {
 final DateTime timestamp = DateTime.now();
 
 currentUserId() {
-  return firebaseAuth.currentUser.uid;
+  return firebaseAuth.currentUser!.uid;
 }
 
-UserModel user;
+UserModel? user;
 
 class _ViewImageState extends State<ViewImage> {
   @override
@@ -45,15 +46,15 @@ class _ViewImageState extends State<ViewImage> {
                 Column(
                   children: [
                     Text(
-                      widget.post.firstName,
+                      widget.post!.firstName!,
                       style: TextStyle(fontWeight: FontWeight.w800),
                     ),
                     SizedBox(height: 3.0),
                     Row(
                       children: [
-                        Icon(Feather.clock, size: 13.0),
+                        Icon(Ionicons.alarm_outline, size: 13.0),
                         SizedBox(width: 3.0),
-                        Text(timeago.format(widget.post.timestamp.toDate())),
+                        Text(timeago.format(widget.post!.timestamp!.toDate())),
                       ],
                     ),
                   ],
@@ -72,7 +73,7 @@ class _ViewImageState extends State<ViewImage> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5.0),
         child: CachedNetworkImage(
-          imageUrl: widget.post.mediaUrl,
+          imageUrl: widget.post!.mediaUrl!,
           placeholder: (context, url) {
             return circularProgress(context);
           },
@@ -88,38 +89,38 @@ class _ViewImageState extends State<ViewImage> {
   }
 
   addLikesToNotification() async {
-    bool isNotMe = currentUserId() != widget.post.ownerId;
+    bool isNotMe = currentUserId() != widget.post!.ownerId;
 
     if (isNotMe) {
       DocumentSnapshot doc = await usersRef.doc(currentUserId()).get();
-      user = UserModel.fromJson(doc.data());
+      user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
       notificationRef
-          .doc(widget.post.ownerId)
+          .doc(widget.post!.ownerId)
           .collection('notifications')
-          .doc(widget.post.postId)
+          .doc(widget.post!.postId)
           .set({
         "type": "like",
-        "firstName": user.firstName,
-        "lastName": user.lastName,
+        "firstName": user!.firstName,
+        "lastName": user!.lastName,
         "userId": currentUserId(),
-        "userDp": user.photoUrl,
-        "postId": widget.post.postId,
-        "mediaUrl": widget.post.mediaUrl,
+        "userDp": user!.photoUrl,
+        "postId": widget.post!.postId,
+        "mediaUrl": widget.post!.mediaUrl,
         "timestamp": timestamp,
       });
     }
   }
 
   removeLikeFromNotification() async {
-    bool isNotMe = currentUserId() != widget.post.ownerId;
+    bool isNotMe = currentUserId() != widget.post!.ownerId;
 
     if (isNotMe) {
       DocumentSnapshot doc = await usersRef.doc(currentUserId()).get();
-      user = UserModel.fromJson(doc.data());
+      user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
       notificationRef
-          .doc(widget.post.ownerId)
+          .doc(widget.post!.ownerId)
           .collection('notifications')
-          .doc(widget.post.postId)
+          .doc(widget.post!.postId)
           .get()
           .then((doc) => {
                 if (doc.exists) {doc.reference.delete()}
@@ -130,7 +131,7 @@ class _ViewImageState extends State<ViewImage> {
   buildLikeButton() {
     return StreamBuilder(
       stream: likesRef
-          .where('postId', isEqualTo: widget.post.postId)
+          .where('postId', isEqualTo: widget.post!.postId)
           .where('userId', isEqualTo: currentUserId())
           .snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -141,7 +142,7 @@ class _ViewImageState extends State<ViewImage> {
               if (docs.isEmpty) {
                 likesRef.add({
                   'userId': currentUserId(),
-                  'postId': widget.post.postId,
+                  'postId': widget.post!.postId,
                   'dateCreated': Timestamp.now(),
                 });
                 addLikesToNotification();

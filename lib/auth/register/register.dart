@@ -3,8 +3,10 @@ import 'package:enawra/pages/terms.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:ionicons/ionicons.dart';
+// import 'package:flutter_icons/flutter_icons.dart';
+// import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:enawra/auth/login/login.dart';
@@ -26,9 +28,9 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     RegisterViewModel viewModel = Provider.of<RegisterViewModel>(context);
-    return ModalProgressHUD(
+    return LoadingOverlay(
       progressIndicator: circularProgress(context),
-      inAsyncCall: viewModel.loading,
+      isLoading: viewModel.loading,
       child: Scaffold(
         key: viewModel.scaffoldKey,
         body: ListView(
@@ -136,7 +138,7 @@ class _RegisterState extends State<Register> {
         children: [
           TextFormBuilder(
             enabled: !viewModel.loading,
-            prefix: Feather.user,
+            prefix: Ionicons.person_outline,
             hintText: "First Name",
             textInputAction: TextInputAction.next,
             validateFunction: Validations.validateName,
@@ -149,7 +151,7 @@ class _RegisterState extends State<Register> {
           SizedBox(height: 20.0),
           TextFormBuilder(
             enabled: !viewModel.loading,
-            prefix: Feather.user,
+            prefix: Ionicons.person_outline,
             hintText: "Last Name",
             textInputAction: TextInputAction.next,
             validateFunction: Validations.validateName,
@@ -162,7 +164,7 @@ class _RegisterState extends State<Register> {
           SizedBox(height: 20.0),
           TextFormBuilder(
             enabled: !viewModel.loading,
-            prefix: Feather.mail,
+            prefix: Ionicons.mail,
             hintText: "Email",
             textInputAction: TextInputAction.next,
             validateFunction: Validations.validateEmail,
@@ -175,7 +177,7 @@ class _RegisterState extends State<Register> {
           SizedBox(height: 20.0),
           TextFormBuilder(
             enabled: !viewModel.loading,
-            prefix: Feather.map_pin,
+            prefix: Ionicons.pin_outline,
             hintText: "Home Town, Country",
             textInputAction: TextInputAction.next,
             validateFunction: Validations.validateCountry,
@@ -188,8 +190,8 @@ class _RegisterState extends State<Register> {
           SizedBox(height: 20.0),
           PasswordFormBuilder(
             enabled: !viewModel.loading,
-            prefix: Feather.lock,
-            suffix: Feather.eye,
+            prefix: Ionicons.lock_closed,
+            suffix: Ionicons.eye_outline,
             hintText: "Password",
             textInputAction: TextInputAction.next,
             validateFunction: Validations.validatePassword,
@@ -203,7 +205,8 @@ class _RegisterState extends State<Register> {
           SizedBox(height: 20.0),
           PasswordFormBuilder(
             enabled: !viewModel.loading,
-            prefix: Feather.lock,
+            prefix: Ionicons.lock_closed,
+            suffix: Ionicons.eye_outline,
             hintText: "Confirm Password",
             textInputAction: TextInputAction.done,
             validateFunction: Validations.validatePassword,

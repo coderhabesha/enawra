@@ -1,12 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:enawra/models/user.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:ionicons/ionicons.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:enawra/components/custom_image.dart';
-import 'package:enawra/utils/firebase.dart';
 import 'package:enawra/view_models/auth/posts_view_model.dart';
 import 'package:enawra/widgets/indicators.dart';
 
@@ -24,14 +20,14 @@ class _CreatePostState extends State<CreatePost> {
         await viewModel.resetPost();
         return true;
       },
-      child: ModalProgressHUD(
+      child: LoadingOverlay(
         progressIndicator: circularProgress(context),
-        inAsyncCall: viewModel.loading,
+        isLoading: viewModel.loading,
         child: Scaffold(
           key: viewModel.scaffoldKey,
           appBar: AppBar(
             leading: IconButton(
-              icon: Icon(Feather.x),
+              icon: Icon(Ionicons.close_outline),
               onPressed: () {
                 viewModel.resetPost();
                 Navigator.pop(context);
@@ -90,7 +86,7 @@ class _CreatePostState extends State<CreatePost> {
                   ),
                   child: viewModel.imgLink != null
                       ? CustomImage(
-                          imageUrl: viewModel.imgLink,
+                          imageUrl: viewModel.imgLink!,
                           width: MediaQuery.of(context).size.width,
                           height: MediaQuery.of(context).size.width - 30,
                           fit: BoxFit.cover,
@@ -105,7 +101,7 @@ class _CreatePostState extends State<CreatePost> {
                               ),
                             )
                           : Image.file(
-                              viewModel.mediaUrl,
+                              viewModel.mediaUrl!,
                               width: MediaQuery.of(context).size.width,
                               height: MediaQuery.of(context).size.width - 30,
                               fit: BoxFit.cover,
@@ -143,7 +139,7 @@ class _CreatePostState extends State<CreatePost> {
               ),
               Divider(),
               ListTile(
-                leading: Icon(Feather.camera),
+                leading: Icon(Ionicons.camera_outline),
                 title: Text('Camera'),
                 onTap: () {
                   Navigator.pop(context);
@@ -151,7 +147,7 @@ class _CreatePostState extends State<CreatePost> {
                 },
               ),
               ListTile(
-                leading: Icon(Feather.image),
+                leading: Icon(Ionicons.image),
                 title: Text('Gallery'),
                 onTap: () {
                   Navigator.pop(context);

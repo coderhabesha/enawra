@@ -3,7 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enawra/screens/view_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+import 'package:ionicons/ionicons.dart';
+// import 'package:flutter_icons/flutter_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:enawra/components/chat_bubble.dart';
 import 'package:enawra/models/enum/message_type.dart';
@@ -16,8 +17,8 @@ import 'package:enawra/widgets/indicators.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class Conversation extends StatefulWidget {
-  final String userId;
-  final String chatId;
+  final String? userId;
+  final String? chatId;
 
   const Conversation({@required this.userId, @required this.chatId});
 
@@ -31,7 +32,7 @@ class _ConversationState extends State<Conversation> {
   TextEditingController messageController = TextEditingController();
 
   bool isFirst = false;
-  String chatId;
+  String? chatId;
 
   @override
   void initState() {
@@ -61,7 +62,7 @@ class _ConversationState extends State<Conversation> {
     viewModel.setUser();
     var user = Provider.of<UserViewModel>(context, listen: false).user;
     Provider.of<ConversationViewModel>(context, listen: false)
-        .setUserTyping(chatId, user, typing);
+        .setUserTyping(chatId!, user, typing);
   }
 
   @override
@@ -72,7 +73,7 @@ class _ConversationState extends State<Conversation> {
 
     var user = Provider.of<UserViewModel>(context, listen: true).user;
     return Consumer<ConversationViewModel>(
-        builder: (BuildContext context, viewModel, Widget child) {
+        builder: (BuildContext? context, viewModel, Widget? child) {
       if (isFirst) {
         setUpFirstChat(viewModel);
       }
@@ -82,7 +83,7 @@ class _ConversationState extends State<Conversation> {
         appBar: AppBar(
           leading: GestureDetector(
             onTap: () {
-              Navigator.pop(context);
+              Navigator.pop(context!);
             },
             child: Icon(
               Icons.keyboard_backspace,
@@ -93,17 +94,17 @@ class _ConversationState extends State<Conversation> {
           title: buildName(),
         ),
         body: Container(
-          height: MediaQuery.of(context).size.height,
+          height: MediaQuery.of(context!).size.height,
           child: Column(
             children: [
               Flexible(
-                child: StreamBuilder(
-                  stream: messageListStream(chatId),
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: messageListStream(chatId!),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      List messages = snapshot.data.docs;
+                      List messages = snapshot.data!.docs;
                       if (messages.isNotEmpty) {
-                        viewModel.setReadCount(chatId, user, messages.length);
+                        viewModel.setReadCount(chatId!, user, messages.length);
                       }
                       return ListView.builder(
                         controller: scrollController,
@@ -115,10 +116,10 @@ class _ConversationState extends State<Conversation> {
                               messages.reversed.toList()[index].data());
                           return ChatBubble(
                               message: '${message.content}',
-                              firstName: '${user.displayName}',
-                              time: message?.time,
-                              isMe: message?.senderUid == user?.uid,
-                              type: message?.type);
+                              firstName: '${user!.displayName}',
+                              time: message.time,
+                              isMe: message.senderUid == user.uid,
+                              type: message.type);
                         },
                       );
                     } else {
@@ -150,7 +151,7 @@ class _ConversationState extends State<Conversation> {
                             style: TextStyle(
                               fontSize: 15.0,
                               color:
-                                  Theme.of(context).textTheme.headline6.color,
+                                  Theme.of(context).textTheme.headline6!.color,
                             ),
                             autofocus: true,
                             decoration: InputDecoration(
@@ -160,7 +161,7 @@ class _ConversationState extends State<Conversation> {
                               hintText: "Type your message",
                               hintStyle: TextStyle(
                                 color:
-                                    Theme.of(context).textTheme.headline6.color,
+                                    Theme.of(context).textTheme.headline6!.color,
                               ),
                             ),
                             maxLines: null,
@@ -168,7 +169,7 @@ class _ConversationState extends State<Conversation> {
                         ),
                         IconButton(
                           icon: Icon(
-                            Feather.send,
+                            Ionicons.send,
                             color: Theme.of(context).colorScheme.secondary,
                           ),
                           onPressed: () {
@@ -209,18 +210,18 @@ class _ConversationState extends State<Conversation> {
       stream: usersRef.doc('${widget.userId}').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          DocumentSnapshot documentSnapshot = snapshot.data;
-          UserModel user = UserModel.fromJson(documentSnapshot.data());
+          DocumentSnapshot documentSnapshot = snapshot.data as DocumentSnapshot<Object>;
+          UserModel user = UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
           return InkWell(
             child: Row(
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(left: 10.0, right: 10.0),
                   child: Hero(
-                    tag: user.email,
+                    tag: user.email!,
                     child: CircleAvatar(
                       radius: 25.0,
-                      backgroundImage: user.photoUrl.isNotEmpty
+                      backgroundImage: user.photoUrl!.isNotEmpty
                           ? CachedNetworkImageProvider('${user.photoUrl}')
                           : null,
                     ),
@@ -241,7 +242,7 @@ class _ConversationState extends State<Conversation> {
                         ),
                         new Spacer(),
                         IconButton(
-                          icon: Icon(Feather.more_horizontal),
+                          icon: Icon(Ionicons.close_outline),
                           onPressed: () => handleReport(context),
                         ),
                       ]),
@@ -347,7 +348,7 @@ class _ConversationState extends State<Conversation> {
   setUpFirstChat(ConversationViewModel viewModel) async {
     if (isFirst) {
       print("Sending the first message");
-      String id = await viewModel.sendFirstMessage(widget.userId);
+      String id = await viewModel.sendFirstMessage(widget.userId!);
       setState(() {
         isFirst = false;
         chatId = id;
@@ -356,13 +357,13 @@ class _ConversationState extends State<Conversation> {
   }
 
   sendMessage(ConversationViewModel viewModel, var user,
-      {bool isImage = false, int imageType}) async {
+      {bool isImage = false, int? imageType}) async {
     String msg;
     if (isImage) {
       msg = await viewModel.pickImage(
-        source: imageType,
+        source: imageType!,
         context: context,
-        chatId: chatId,
+        chatId: chatId!,
       );
     } else {
       msg = messageController.text.trim();
@@ -378,7 +379,7 @@ class _ConversationState extends State<Conversation> {
 
     if (msg.isNotEmpty) {
       viewModel.sendMessage(
-        chatId,
+        chatId!,
         message,
       );
     }

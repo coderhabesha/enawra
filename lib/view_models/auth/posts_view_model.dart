@@ -24,24 +24,24 @@ class PostsViewModel extends ChangeNotifier {
 
   //Variables
   bool loading = false;
-  String firstName;
-  String lastName;
-  File mediaUrl;
+  String? firstName;
+  String? lastName;
+  File? mediaUrl;
   final picker = ImagePicker();
-  String location;
-  Position position;
-  Placemark placemark;
-  String bio;
-  String description;
-  String email;
-  String commentData;
-  String ownerId;
-  String userId;
-  String type;
-  File userDp;
-  String imgLink;
-  bool edit = false;
-  String id;
+  String? location;
+  Position? position;
+  Placemark? placemark;
+  String? bio;
+  String? description;
+  String? email;
+  String? commentData;
+  String? ownerId;
+  String? userId;
+  String? type;
+  File? userDp;
+  String? imgLink;
+  bool? edit = false;
+  String? id;
 
   //controllers
   TextEditingController locationTEC = TextEditingController();
@@ -97,15 +97,15 @@ class PostsViewModel extends ChangeNotifier {
   }
 
   //Functions
-  pickImage({bool camera = false, BuildContext context}) async {
+  pickImage({bool camera = false, BuildContext? context}) async {
     loading = true;
     notifyListeners();
     try {
-      PickedFile pickedFile = await picker.getImage(
+      PickedFile? pickedFile = await picker.getImage(
         source: camera ? ImageSource.camera : ImageSource.gallery,
       );
-      File croppedFile = await ImageCropper().cropImage(
-        sourcePath: pickedFile.path,
+      CroppedFile? croppedFile = await ImageCropper().cropImage(
+        sourcePath: pickedFile!.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,
           CropAspectRatioPreset.ratio3x2,
@@ -113,24 +113,26 @@ class PostsViewModel extends ChangeNotifier {
           CropAspectRatioPreset.ratio4x3,
           CropAspectRatioPreset.ratio16x9
         ],
-        androidUiSettings: AndroidUiSettings(
-          toolbarTitle: 'Crop Image',
-          toolbarColor: Constants.lightAccent,
-          toolbarWidgetColor: Colors.white,
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: false,
-        ),
-        iosUiSettings: IOSUiSettings(
-          minimumAspectRatio: 1.0,
-        ),
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Crop Image',
+            toolbarColor: Constants.lightAccent,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false,
+          ),
+          IOSUiSettings(
+            minimumAspectRatio: 1.0,
+          ),
+        ],
       );
-      mediaUrl = File(croppedFile.path);
+      mediaUrl = File(croppedFile!.path);
       loading = false;
       notifyListeners();
     } catch (e) {
       loading = false;
       notifyListeners();
-      showInSnackBar('Cancelled',context);
+      showInSnackBar('Cancelled', context);
     }
   }
 
@@ -138,7 +140,7 @@ class PostsViewModel extends ChangeNotifier {
     try {
       loading = true;
       notifyListeners();
-      await postService.uploadPost(mediaUrl, description);
+      await postService.uploadPost(mediaUrl!, description!);
       loading = false;
       resetPost();
       notifyListeners();
@@ -146,20 +148,20 @@ class PostsViewModel extends ChangeNotifier {
       print(e);
       loading = false;
       resetPost();
-      showInSnackBar('Uploaded successfully!',context);
+      showInSnackBar('Uploaded successfully!', context);
       notifyListeners();
     }
   }
 
   uploadProfilePicture(BuildContext context) async {
     if (mediaUrl == null) {
-      showInSnackBar('Please select an image',context);
+      showInSnackBar('Please select an image', context);
     } else {
       try {
         loading = true;
         notifyListeners();
         await postService.uploadProfilePicture(
-            mediaUrl, firebaseAuth.currentUser);
+            mediaUrl!, firebaseAuth.currentUser!);
         loading = false;
         Navigator.of(context)
             .pushReplacement(CupertinoPageRoute(builder: (_) => TabScreen()));
@@ -167,7 +169,7 @@ class PostsViewModel extends ChangeNotifier {
       } catch (e) {
         print(e);
         loading = false;
-        showInSnackBar('Uploaded successfully!',context);
+        showInSnackBar('Uploaded successfully!', context);
         notifyListeners();
       }
     }
@@ -181,7 +183,7 @@ class PostsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void showInSnackBar(String value,context) {
+  void showInSnackBar(String value, context) {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }

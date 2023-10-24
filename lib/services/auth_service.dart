@@ -4,24 +4,24 @@ import 'package:enawra/utils/firebase.dart';
 
 class AuthService {
   User getCurrentUser() {
-    User user = firebaseAuth.currentUser;
+    User user = firebaseAuth.currentUser!;
     return user;
   }
 
 //create a firebase user 
   Future<bool> createUser(
-      {String firstName,
-        String lastName,
-      User user,
-      String email,
-      String country,
-      String password}) async {
+      {String? firstName,
+        String? lastName,
+      User? user,
+      String? email,
+      String? country,
+      String? password}) async {
     var res = await firebaseAuth.createUserWithEmailAndPassword(
       email: '$email',
       password: '$password',
     );
     if (res.user != null) {
-      await saveUserToFirestore(firstName, lastName, res.user, email, country);
+      await saveUserToFirestore(firstName!, lastName!, res.user!, email!, country!);
       return true;
     } else {
       return false;
@@ -45,7 +45,7 @@ class AuthService {
 
 
 //function to login a user with his email and password
-  Future<bool> loginUser({String email, String password}) async {
+  Future<bool> loginUser({String? email, String? password}) async {
     var res = await firebaseAuth.signInWithEmailAndPassword(
       email: '$email',
       password: '$password',

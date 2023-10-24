@@ -6,11 +6,11 @@ import 'package:enawra/models/enum/message_type.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatBubble extends StatefulWidget {
-  final String message;
-  final String firstName;
-  final MessageType type;
-  final Timestamp time;
-  final bool isMe;
+  final String? message;
+  final String? firstName;
+  final MessageType? type;
+  final Timestamp? time;
+  final bool? isMe;
 
   ChatBubble({
     @required this.message,
@@ -25,8 +25,8 @@ class ChatBubble extends StatefulWidget {
 }
 
 class _ChatBubbleState extends State<ChatBubble> {
-  Color chatBubbleColor() {
-    if (widget.isMe) {
+  Color? chatBubbleColor() {
+    if (widget.isMe!) {
       return Theme.of(context).colorScheme.secondary;
     } else {
       if (Theme.of(context).brightness == Brightness.dark) {
@@ -37,7 +37,7 @@ class _ChatBubbleState extends State<ChatBubble> {
     }
   }
 
-  Color chatBubbleReplyColor() {
+  Color? chatBubbleReplyColor() {
     if (Theme.of(context).brightness == Brightness.dark) {
       return Colors.grey[600];
     } else {
@@ -48,8 +48,8 @@ class _ChatBubbleState extends State<ChatBubble> {
   @override
   Widget build(BuildContext context) {
     final align =
-        widget.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start;
-    final radius = widget.isMe
+        widget.isMe! ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+    final radius = widget.isMe!
         ? BorderRadius.only(
             topLeft: Radius.circular(15.0),
             bottomLeft: Radius.circular(15.0),
@@ -83,11 +83,11 @@ class _ChatBubbleState extends State<ChatBubble> {
                     EdgeInsets.all(widget.type == MessageType.TEXT ? 5 : 0),
                 child: widget.type == MessageType.TEXT
                     ? Text(
-                        widget.message,
+                        widget.message!,
                         style: TextStyle(
-                          color: widget.isMe
+                          color: widget.isMe!
                               ? Colors.white
-                              : Theme.of(context).textTheme.headline6.color,
+                              : Theme.of(context).textTheme.headline6?.color,
                         ),
                       )
                     : CachedNetworkImage(
@@ -101,7 +101,7 @@ class _ChatBubbleState extends State<ChatBubble> {
           ),
         ),
         Padding(
-          padding: widget.isMe
+          padding: widget.isMe!
               ? EdgeInsets.only(
                   right: 10.0,
                   bottom: 10.0,
@@ -112,9 +112,9 @@ class _ChatBubbleState extends State<ChatBubble> {
                 ),
           child: TextTime(
             child: Text(
-              timeago.format(widget.time.toDate()),
+              timeago.format(widget.time!.toDate()),
               style: TextStyle(
-                color: Theme.of(context).textTheme.headline6.color,
+                color: Theme.of(context).textTheme.headline6?.color,
                 fontSize: 10.0,
               ),
             ),

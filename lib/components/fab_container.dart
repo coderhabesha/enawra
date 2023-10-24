@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import '../posts/create_post.dart';
 
 class FabContainer extends StatelessWidget {
-  final Widget page;
-  final IconData icon;
-  final bool mini;
+  final Widget? page;
+  final IconData? icon;
+  final bool? mini;
 
   FabContainer({@required this.page, @required this.icon, this.mini = false});
 
@@ -15,7 +15,7 @@ class FabContainer extends StatelessWidget {
     return OpenContainer(
       transitionType: ContainerTransitionType.fade,
       openBuilder: (BuildContext context, VoidCallback _) {
-        return page;
+        return page!;
       },
       closedElevation: 4.0,
       closedShape: const RoundedRectangleBorder(
@@ -39,7 +39,7 @@ class FabContainer extends StatelessWidget {
               ),
             );
           },
-          mini: mini,
+          mini: mini!,
         );
       },
     );

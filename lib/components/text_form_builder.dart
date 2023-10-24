@@ -2,20 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:enawra/components/custom_card.dart';
 
 class TextFormBuilder extends StatefulWidget {
-  final String initialValue;
-  final bool enabled;
-  final String hintText;
-  final TextInputType textInputType;
-  final TextEditingController controller;
-  final TextInputAction textInputAction;
-  final bool obscureText;
-  final FocusNode focusNode, nextFocusNode;
-  final VoidCallback submitAction;
-  final FormFieldValidator<String> validateFunction;
-  final void Function(String) onSaved, onChange;
-  final Key key;
-  final IconData prefix;
-  final IconData suffix;
+  final String? initialValue;
+  final bool? enabled;
+  final String? hintText;
+  final TextInputType? textInputType;
+  final TextEditingController? controller;
+  final TextInputAction? textInputAction;
+  final bool? obscureText;
+  final FocusNode? focusNode, nextFocusNode;
+  final VoidCallback? submitAction;
+  final FormFieldValidator<String>? validateFunction;
+  final void Function(String)? onSaved, onChange;
+  final Key? key;
+  final IconData? prefix, suffix;
 
   TextFormBuilder(
       {this.prefix,
@@ -40,7 +39,7 @@ class TextFormBuilder extends StatefulWidget {
 }
 
 class _TextFormBuilderState extends State<TextFormBuilder> {
-  String error;
+  String? error;
 
   @override
   Widget build(BuildContext context) {
@@ -55,38 +54,39 @@ class _TextFormBuilderState extends State<TextFormBuilder> {
               child: Theme(
                 data: ThemeData(
                   primaryColor: Theme.of(context).colorScheme.secondary,
-                  accentColor: Theme.of(context).colorScheme.secondary,
+                  colorScheme: ColorScheme.fromSwatch().copyWith(
+                      secondary: Theme.of(context).colorScheme.secondary),
                 ),
                 child: TextFormField(
                   textCapitalization: TextCapitalization.sentences,
                   initialValue: widget.initialValue,
                   enabled: widget.enabled,
                   onChanged: (val) {
-                    error = widget.validateFunction(val);
+                    error = widget.validateFunction!(val);
                     setState(() {});
-                    widget.onSaved(val);
+                    widget.onSaved!(val);
                   },
                   style: TextStyle(
                     fontSize: 15.0,
                   ),
                   key: widget.key,
                   controller: widget.controller,
-                  obscureText: widget.obscureText,
+                  obscureText: widget.obscureText!,
                   keyboardType: widget.textInputType,
                   validator: widget.validateFunction,
                   onSaved: (val) {
-                    error = widget.validateFunction(val);
+                    error = widget.validateFunction!(val);
                     setState(() {});
-                    widget.onSaved(val);
+                    widget.onSaved!(val!);
                   },
                   textInputAction: widget.textInputAction,
                   focusNode: widget.focusNode,
                   onFieldSubmitted: (String term) {
                     if (widget.nextFocusNode != null) {
-                      widget.focusNode.unfocus();
+                      widget.focusNode!.unfocus();
                       FocusScope.of(context).requestFocus(widget.nextFocusNode);
                     } else {
-                      widget.submitAction();
+                      widget.submitAction!();
                     }
                   },
                   decoration: InputDecoration(

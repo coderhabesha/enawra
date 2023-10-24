@@ -9,7 +9,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:enawra/widgets/indicators.dart';
 
 class ActivityItems extends StatefulWidget {
-  final ActivityModel activity;
+  final ActivityModel? activity;
 
   ActivityItems({this.activity});
 
@@ -37,7 +37,7 @@ class _ActivityItemsState extends State<ActivityItems> {
             },
             leading: CircleAvatar(
               radius: 25.0,
-              backgroundImage: NetworkImage(widget.activity.userDp),
+              backgroundImage: NetworkImage(widget.activity!.userDp!),
             ),
             title: RichText(
               overflow: TextOverflow.ellipsis,
@@ -48,7 +48,7 @@ class _ActivityItemsState extends State<ActivityItems> {
                 ),
                 children: [
                   TextSpan(
-                    text: '${widget.activity.firstName} ',
+                    text: '${widget.activity!.firstName} ',
                     style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
                   ),
@@ -60,7 +60,7 @@ class _ActivityItemsState extends State<ActivityItems> {
               ),
             ),
             subtitle: Text(
-              timeago.format(widget.activity.timestamp.toDate()),
+              timeago.format(widget.activity!.timestamp!.toDate()),
             ),
             trailing: previewConfiguration(),
           ),
@@ -84,9 +84,9 @@ class _ActivityItemsState extends State<ActivityItems> {
 
   delete() {
     notificationRef
-        .doc(firebaseAuth.currentUser.uid)
+        .doc(firebaseAuth.currentUser!.uid)
         .collection('notifications')
-        .doc(widget.activity.postId)
+        .doc(widget.activity!.postId)
         .get()
         .then((doc) => {
               if (doc.exists)
@@ -97,7 +97,7 @@ class _ActivityItemsState extends State<ActivityItems> {
   }
 
   previewConfiguration() {
-    if (widget.activity.type == "like" || widget.activity.type == "comment") {
+    if (widget.activity!.type == "like" || widget.activity!.type == "comment") {
       return buildPreviewImage();
     } else {
       return Text('');
@@ -105,14 +105,14 @@ class _ActivityItemsState extends State<ActivityItems> {
   }
 
   buildTextConfiguration() {
-    if (widget.activity.type == "like") {
+    if (widget.activity!.type == "like") {
       return "liked your post";
-    } else if (widget.activity.type == "follow") {
+    } else if (widget.activity!.type == "follow") {
       return "is following you";
-    } else if (widget.activity.type == "comment") {
-      return "commented '${widget.activity.commentData}'";
+    } else if (widget.activity!.type == "comment") {
+      return "commented '${widget.activity!.commentData}'";
     } else {
-      return "Error: Unknown type '${widget.activity.type}'";
+      return "Error: Unknown type '${widget.activity!.type}'";
     }
   }
 
@@ -120,7 +120,7 @@ class _ActivityItemsState extends State<ActivityItems> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(5.0),
       child: CachedNetworkImage(
-        imageUrl: widget.activity.mediaUrl,
+        imageUrl: widget.activity!.mediaUrl!,
         placeholder: (context, url) {
           return circularProgress(context);
         },

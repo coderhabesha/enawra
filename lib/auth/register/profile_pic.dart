@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:ionicons/ionicons.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:enawra/components/custom_image.dart';
 import 'package:enawra/view_models/auth/posts_view_model.dart';
@@ -20,9 +20,9 @@ class _ProfilePictureState extends State<ProfilePicture> {
         viewModel.resetPost();
         return true;
       },
-      child: ModalProgressHUD(
+      child: LoadingOverlay(
         progressIndicator: circularProgress(context),
-        inAsyncCall: viewModel.loading,
+        isLoading: viewModel.loading,
         child: Scaffold(
           key: viewModel.scaffoldKey,
           appBar: AppBar(
@@ -48,7 +48,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                   ),
                   child: viewModel.imgLink != null
                       ? CustomImage(
-                          imageUrl: viewModel.imgLink,
+                          imageUrl: viewModel.imgLink!,
                           width: MediaQuery.of(context).size.width,
                           height: MediaQuery.of(context).size.width - 30,
                           fit: BoxFit.cover,
@@ -63,7 +63,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                               ),
                             )
                           : Image.file(
-                              viewModel.mediaUrl,
+                              viewModel.mediaUrl!,
                               width: MediaQuery.of(context).size.width,
                               height: MediaQuery.of(context).size.width - 30,
                               fit: BoxFit.cover,
@@ -119,7 +119,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
               ),
               Divider(),
               ListTile(
-                leading: Icon(Feather.camera),
+                leading: Icon(Ionicons.camera),
                 title: Text('Camera'),
                 onTap: () {
                   Navigator.pop(context);
@@ -127,7 +127,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                 },
               ),
               ListTile(
-                leading: Icon(Feather.image),
+                leading: Icon(Ionicons.image),
                 title: Text('Gallery'),
                 onTap: () {
                   Navigator.pop(context);

@@ -12,7 +12,7 @@ class ConversationViewModel extends ChangeNotifier {
   ChatService chatService = ChatService();
   bool uploadingImage = false;
   final picker = ImagePicker();
-  File image;
+  File? image;
 
   sendMessage(String chatId, Message message) {
     chatService.sendMessage(
@@ -37,8 +37,8 @@ class ConversationViewModel extends ChangeNotifier {
     chatService.setUserTyping(chatId, user, typing);
   }
 
-  pickImage({int source, BuildContext context, String chatId}) async {
-    PickedFile pickedFile = source == 0
+  pickImage({int? source, BuildContext? context, String? chatId}) async {
+    PickedFile? pickedFile = source == 0
         ? await picker.getImage(
             source: ImageSource.camera,
           )
@@ -47,7 +47,7 @@ class ConversationViewModel extends ChangeNotifier {
           );
 
     if (pickedFile != null) {
-      File croppedFile = await ImageCropper().cropImage(
+      CroppedFile? croppedFile = await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,
@@ -56,26 +56,28 @@ class ConversationViewModel extends ChangeNotifier {
           CropAspectRatioPreset.ratio4x3,
           CropAspectRatioPreset.ratio16x9
         ],
-        androidUiSettings: AndroidUiSettings(
-          toolbarTitle: 'Crop image',
-          toolbarColor: Theme.of(context).appBarTheme.backgroundColor,
-          toolbarWidgetColor: Theme.of(context).iconTheme.color,
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: false,
-        ),
-        iosUiSettings: IOSUiSettings(
-          minimumAspectRatio: 1.0,
-        ),
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Crop image',
+            toolbarColor: Theme.of(context!).appBarTheme.backgroundColor,
+            toolbarWidgetColor: Theme.of(context).iconTheme.color,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false,
+          ),
+          IOSUiSettings(
+            minimumAspectRatio: 1.0,
+          ),
+        ],
       );
 
       Navigator.of(context).pop();
 
       if (croppedFile != null) {
         uploadingImage = true;
-        image = croppedFile;
+        image = File(croppedFile.path);
         notifyListeners();
         showInSnackBar("Uploading image...", context);
-        String imageUrl = await chatService.uploadImage(croppedFile, chatId);
+        String imageUrl = await chatService.uploadImage(image!, chatId);
         return imageUrl;
       }
     }

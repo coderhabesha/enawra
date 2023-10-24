@@ -9,15 +9,15 @@ import 'package:enawra/utils/firebase.dart';
 class ChatService {
   FirebaseStorage storage = FirebaseStorage.instance;
 
-  sendMessage(Message message, String chatId) async {
+  sendMessage(Message? message, String? chatId) async {
     //will send message to chats collection with the usersId
-    await chatRef.doc("$chatId").collection("messages").add(message.toJson());
+    await chatRef.doc("$chatId").collection("messages").add(message!.toJson());
     //will update "lastTextTime" to the last time a text was sent
     await chatRef.doc("$chatId").update({"lastTextTime": Timestamp.now()});
   }
 
-  Future<String> sendFirstMessage(String recipient) async {
-    User user = firebaseAuth.currentUser;
+  Future<String> sendFirstMessage(String? recipient) async {
+    User user = firebaseAuth.currentUser!;
     DocumentReference ref = await chatRef.add({
       'users': [recipient, user.uid],
     });
@@ -25,10 +25,10 @@ class ChatService {
     return ref.id;
   }
 
-  Future<String> uploadImage(File image, String chatId) async {
+  Future<String> uploadImage(File? image, String? chatId) async {
     Reference storageReference =
-        storage.ref().child("chats").child(chatId).child(uuid.v4());
-    UploadTask uploadTask = storageReference.putFile(image);
+        storage.ref().child("chats").child(chatId!).child(uuid.v4());
+    UploadTask uploadTask = storageReference.putFile(image!);
     await uploadTask.whenComplete(() => null);
     String imageUrl = await storageReference.getDownloadURL();
     return imageUrl;
@@ -36,7 +36,7 @@ class ChatService {
 
 
 //determine if a user has read a chat and updates how many messages are unread
-  setUserRead(String chatId, User user, int count) async {
+  setUserRead(String? chatId, User? user, int? count) async {
     // DocumentSnapshot snap = await chatRef.doc(chatId).get();
     //
     // Map reads = {user?.uid : count};// snap.get('reads') ?? new Map();
@@ -48,7 +48,7 @@ class ChatService {
   }
 
 //determine when a user has start typing a message
-  setUserTyping(String chatId, User user, bool userTyping) async {
+  setUserTyping(String? chatId, User? user, bool? userTyping) async {
     // DocumentSnapshot snap = await chatRef.doc(chatId).get();
     // Map typing = snap.get('typing') ?? {};
     // typing[user?.uid] = userTyping;

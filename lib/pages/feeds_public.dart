@@ -1,13 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:enawra/widgets/userpost_search.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:enawra/models/post.dart';
-import 'package:enawra/pages/profile.dart';
 import 'package:enawra/utils/firebase.dart';
 import 'package:enawra/widgets/indicators.dart';
-import 'package:enawra/widgets/userpost.dart';
 
 class TimelinePublic extends StatefulWidget {
   @override
@@ -25,9 +21,9 @@ class _TimelinePublicState extends State<TimelinePublic> {
 
   int documentLimit = 50;
 
-  DocumentSnapshot lastDocument;
+  DocumentSnapshot? lastDocument;
 
-  ScrollController _scrollController;
+  ScrollController? _scrollController;
 
   getPosts() async {
     if (!hasMore) {
@@ -48,7 +44,7 @@ class _TimelinePublicState extends State<TimelinePublic> {
     } else {
       querySnapshot = await postRef
           .orderBy('timestamp', descending: true)
-          .startAfterDocument(lastDocument)
+          .startAfterDocument(lastDocument!)
           .limit(documentLimit)
           .get();
     }
@@ -67,8 +63,8 @@ class _TimelinePublicState extends State<TimelinePublic> {
     super.initState();
     getPosts();
     _scrollController?.addListener(() {
-      double maxScroll = _scrollController.position.maxScrollExtent;
-      double currentScroll = _scrollController.position.pixels;
+      double maxScroll = _scrollController!.position.maxScrollExtent;
+      double currentScroll = _scrollController!.position.pixels;
       double delta = MediaQuery.of(context).size.height * 0.25;
       if (maxScroll - currentScroll <= delta) {
         getPosts();
@@ -94,8 +90,7 @@ class _TimelinePublicState extends State<TimelinePublic> {
               controller: _scrollController,
               itemCount: post.length,
               itemBuilder: (context, index) {
-                internetChecker(context);
-                PostModel posts = PostModel.fromJson(post[index].data());
+                PostModel posts = PostModel.fromJson(post[index].data() as Map<String, dynamic>);
                 return Padding(
                   padding: const EdgeInsets.all(3.0),
                   child: UserPostSearch(post: posts),
@@ -103,13 +98,6 @@ class _TimelinePublicState extends State<TimelinePublic> {
               },
             ),
     );
-  }
-
-  internetChecker(context) async {
-    bool result = await DataConnectionChecker().hasConnection;
-    if (result == false) {
-      showInSnackBar('No Internet Connection', context);
-    }
   }
 
   void showInSnackBar(String value, context) {

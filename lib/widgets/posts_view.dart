@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+// import 'package:flutter_icons/flutter_icons.dart';
 
 import 'package:enawra/models/post.dart';
 import 'package:enawra/models/user.dart';
@@ -10,10 +10,11 @@ import 'package:enawra/screens/comment.dart';
 import 'package:enawra/screens/view_image.dart';
 import 'package:enawra/utils/firebase.dart';
 import 'package:enawra/widgets/cached_image.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class Posts extends StatefulWidget {
-  final PostModel post;
+  final PostModel? post;
 
   Posts({this.post});
 
@@ -25,7 +26,7 @@ class _PostsState extends State<Posts> {
   final DateTime timestamp = DateTime.now();
 
   currentUserId() {
-    return firebaseAuth.currentUser.uid;
+    return firebaseAuth.currentUser!.uid!;
   }
 
   @override
@@ -33,7 +34,7 @@ class _PostsState extends State<Posts> {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
-            CupertinoPageRoute(builder: (_) => Comments(post: widget.post)));
+            CupertinoPageRoute(builder: (_) => Comments(post: widget.post!)));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -44,19 +45,19 @@ class _PostsState extends State<Posts> {
           mainAxisSize: MainAxisSize.min,
           children: [
             buildPostHeader(),
-            widget.post.mediaUrl.isNotEmpty ? Container(
+            widget.post!.mediaUrl!.isNotEmpty ? Container(
               height: 320.0,
               width: MediaQuery.of(context).size.width - 18.0,
-              child: cachedNetworkImage(widget.post.mediaUrl),
+              child: cachedNetworkImage(widget.post!.mediaUrl!),
             ) : Container(),
             Flexible(
               child: ListTile(
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
                 title: Text(
-                  widget.post.description == null
+                  widget.post!.description! == null
                       ? ""
-                      : widget.post.description,
+                      : widget.post!.description!,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.0),
                 ),
@@ -65,17 +66,17 @@ class _PostsState extends State<Posts> {
                   child: Row(
                     children: [
                       Text(
-                        timeago.format(widget.post.timestamp.toDate()),
+                        timeago.format(widget.post!.timestamp!.toDate!()),
                       ),
                       SizedBox(width: 3.0),
                       StreamBuilder(
                         stream: likesRef
-                            .where('postId', isEqualTo: widget.post.postId)
+                            .where('postId', isEqualTo: widget.post!.postId)
                             .snapshots(),
                         builder:
                             (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                           if (snapshot.hasData) {
-                            QuerySnapshot snap = snapshot.data;
+                            QuerySnapshot snap = snapshot.data!;
                             List<DocumentSnapshot> docs = snap.docs;
                             return buildLikesCount(context, docs?.length ?? 0);
                           } else {
@@ -86,13 +87,13 @@ class _PostsState extends State<Posts> {
                       SizedBox(width: 5.0),
                       StreamBuilder(
                         stream: commentRef
-                            .doc(widget.post.postId)
+                            .doc(widget.post!.postId)
                             .collection("comments")
                             .snapshots(),
                         builder:
                             (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                           if (snapshot.hasData) {
-                            QuerySnapshot snap = snapshot.data;
+                            QuerySnapshot snap = snapshot.data!;
                             List<DocumentSnapshot> docs = snap.docs;
                             return buildCommentsCount(
                                 context, docs?.length ?? 0);
@@ -116,7 +117,7 @@ class _PostsState extends State<Posts> {
                       onPressed: () {
                         Navigator.of(context).push(
                           CupertinoPageRoute(
-                            builder: (_) => Comments(post: widget.post),
+                            builder: (_) => Comments(post: widget.post!),
                           ),
                         );
                       },
@@ -156,7 +157,7 @@ class _PostsState extends State<Posts> {
   }
 
   Widget buildPostHeader() {
-    bool isMe = currentUserId() == widget.post.ownerId;
+    bool isMe = currentUserId() == widget.post!.ownerId;
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 5.0),
       leading: Container(
@@ -164,15 +165,15 @@ class _PostsState extends State<Posts> {
         child: buildUserDp()
       ),
       title: Text(
-        widget.post.firstName,
+        widget.post!.firstName!,
         style: TextStyle(fontWeight: FontWeight.bold),
       ),
       subtitle: Text(
-        widget.post.location == null ? 'enawra' : widget.post.location,
+        widget.post!.location == null ? 'enawra' : widget.post!.location!,
       ),
       trailing: isMe
           ? IconButton(
-              icon: Icon(Feather.more_horizontal),
+              icon: Icon(Ionicons.grid_outline),
               onPressed: () => handleDelete(context),
             )
           : IconButton(
@@ -185,15 +186,15 @@ class _PostsState extends State<Posts> {
 
   buildUserDp() {
     return StreamBuilder(
-      stream: usersRef.doc(widget.post.ownerId).snapshots(),
+      stream: usersRef.doc(widget.post!.ownerId).snapshots(),
       builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasData) {
-          UserModel user = UserModel.fromJson(snapshot.data.data());
+          UserModel user = UserModel.fromJson(snapshot.data!.data() as Map<String, dynamic>);
           return GestureDetector(
             onTap: () => showProfile(context, profileId: user?.id),
             child: CircleAvatar(
               radius: 25.0,
-              backgroundImage: user.photoUrl.isNotEmpty ? NetworkImage(user.photoUrl) : null,
+              backgroundImage: user.photoUrl!.isNotEmpty ? NetworkImage(user!.photoUrl!) : null,
             ),
           );
         }
@@ -205,7 +206,7 @@ class _PostsState extends State<Posts> {
   buildLikeButton() {
     return StreamBuilder(
       stream: likesRef
-          .where('postId', isEqualTo: widget.post.postId)
+          .where('postId', isEqualTo: widget.post!.postId)
           .where('userId', isEqualTo: currentUserId())
           .snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -216,7 +217,7 @@ class _PostsState extends State<Posts> {
               if (docs.isEmpty) {
                 likesRef.add({
                   'userId': currentUserId(),
-                  'postId': widget.post.postId,
+                  'postId': widget.post!.postId,
                   'dateCreated': Timestamp.now(),
                 });
                 addLikesToNotification();
@@ -241,38 +242,38 @@ class _PostsState extends State<Posts> {
   }
 
   addLikesToNotification() async {
-    bool isNotMe = currentUserId() != widget.post.ownerId;
+    bool isNotMe = currentUserId() != widget.post!.ownerId;
 
     if (isNotMe) {
       DocumentSnapshot doc = await usersRef.doc(currentUserId()).get();
-      user = UserModel.fromJson(doc.data());
+      user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
       notificationRef
-          .doc(widget.post.ownerId)
+          .doc(widget.post!.ownerId)
           .collection('notifications')
-          .doc(widget.post.postId)
+          .doc(widget.post!.postId)
           .set({
         "type": "like",
-        "firstName": user.firstName,
-        "lastName": user.lastName,
+        "firstName": user!.firstName,
+        "lastName": user!.lastName,
         "userId": currentUserId(),
-        "userDp": user.photoUrl,
-        "postId": widget.post.postId,
-        "mediaUrl": widget.post.mediaUrl,
+        "userDp": user!.photoUrl,
+        "postId": widget.post!.postId,
+        "mediaUrl": widget.post!.mediaUrl,
         "timestamp": timestamp,
       });
     }
   }
 
   removeLikeFromNotification() async {
-    bool isNotMe = currentUserId() != widget.post.ownerId;
+    bool isNotMe = currentUserId() != widget.post!.ownerId;
 
     if (isNotMe) {
       DocumentSnapshot doc = await usersRef.doc(currentUserId()).get();
-      user = UserModel.fromJson(doc.data());
+      user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
       notificationRef
-          .doc(widget.post.ownerId)
+          .doc(widget.post!.ownerId)
           .collection('notifications')
-          .doc(widget.post.postId)
+          .doc(widget.post!.postId)
           .get()
           .then((doc) => {
                 if (doc.exists) {doc.reference.delete()}
@@ -310,13 +311,13 @@ class _PostsState extends State<Posts> {
 
   //you can only delete your own posts
   deletePost() async {
-    postRef.doc(widget.post.id).delete();
+    postRef.doc(widget.post!.id).delete();
 
     //delete notification associated with that given post
     QuerySnapshot notificationsSnap = await notificationRef
-        .doc(widget.post.ownerId)
+        .doc(widget.post!.ownerId)
         .collection('notifications')
-        .where('postId', isEqualTo: widget.post.postId)
+        .where('postId', isEqualTo: widget.post!.postId)
         .get();
     notificationsSnap.docs.forEach((doc) {
       if (doc.exists) {
@@ -326,7 +327,7 @@ class _PostsState extends State<Posts> {
 
     //delete all the comments associated with that given post
     QuerySnapshot commentSnapshot =
-        await commentRef.doc(widget.post.postId).collection('comments').get();
+        await commentRef.doc(widget.post!.postId).collection('comments').get();
     commentSnapshot.docs.forEach((doc) {
       if (doc.exists) {
         doc.reference.delete();
@@ -334,7 +335,7 @@ class _PostsState extends State<Posts> {
     });
   }
 
-  showProfile(BuildContext context, {String profileId}) {
+  showProfile(BuildContext context, {String? profileId}) {
     Navigator.push(
       context,
       CupertinoPageRoute(

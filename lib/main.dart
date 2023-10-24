@@ -19,13 +19,14 @@ void main() async {
 
   try {
     final fcmToken = await FirebaseMessaging.instance.getToken();
-    final RemoteMessage remoteMessage = await FirebaseMessaging.instance.getInitialMessage();
+    // final RemoteMessage remoteMessage = await FirebaseMessaging.instance.getInitialMessage();
+    final RemoteMessage remoteMessage = Config.initFirebase();
 
     // await HelperNotification.initialize()
     // FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
     print("fcm token $fcmToken");
     print(remoteMessage.data);
-    print(remoteMessage.notification.body);
+    print(remoteMessage.notification!.body);
     print("remote messageeeeee: $remoteMessage");
 
     // if(remoteMessage != null) {
@@ -40,24 +41,6 @@ void main() async {
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
-}
-
-class MessageHandler extends StatefulWidget {
-  @override
-  createState() => _MessageHandlerState();
-}
-
-class _MessageHandlerState extends State<MessageHandler> {
-  
-  @override
-  void initState() {
-    super.initState();
-  }
-  
-  @override
-  Widget build(BuildContext context) {
-    return null;
-  }
 }
 
 class _MyAppState extends State<MyApp> {
@@ -85,7 +68,7 @@ class _MyAppState extends State<MyApp> {
             theme: notifier.dark ? Constants.darkTheme : Constants.lightTheme,
             home: StreamBuilder(
               stream: FirebaseAuth.instance.authStateChanges(),
-              builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
+              builder: (BuildContext context, snapshot) {
                 if (snapshot.hasData) {
                   return TabScreen();
                 } else

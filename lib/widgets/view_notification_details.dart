@@ -1,14 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+// import 'package:flutter_icons/flutter_icons.dart';
 import 'package:enawra/models/notification.dart';
 import 'package:enawra/pages/profile.dart';
 import 'package:enawra/widgets/indicators.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ViewActivityDetails extends StatefulWidget {
-  final ActivityModel activity;
+  final ActivityModel? activity;
 
   ViewActivityDetails({this.activity});
 
@@ -39,24 +40,24 @@ class _ViewActivityDetailsState extends State<ViewActivityDetails> {
                     context,
                     CupertinoPageRoute(
                       builder: (_) =>
-                          Profile(profileId: widget.activity.userId),
+                          Profile(profileId: widget.activity!.userId),
                     ));
               },
               child: CircleAvatar(
                 radius: 25.0,
-                backgroundImage: NetworkImage(widget.activity.userDp),
+                backgroundImage: NetworkImage(widget.activity!.userDp!),
               ),
             ),
             title: Text(
-              widget.activity.firstName + " " + widget.activity.lastName,
+              widget.activity!.firstName!,
               style: TextStyle(fontWeight: FontWeight.w800),
             ),
             subtitle: Row(
               children: [
-                Icon(Feather.clock, size: 13.0),
+                Icon(Ionicons.alarm_outline, size: 13.0),
                 SizedBox(width: 3.0),
                 Text(
-                  timeago.format(widget.activity.timestamp.toDate()),
+                  timeago.format(widget.activity!.timestamp!.toDate()),
                 ),
               ],
             ),
@@ -80,7 +81,7 @@ class _ViewActivityDetailsState extends State<ViewActivityDetails> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5.0),
         child: CachedNetworkImage(
-          imageUrl: widget.activity.mediaUrl,
+          imageUrl: widget.activity!.mediaUrl!,
           placeholder: (context, url) {
             return circularProgress(context);
           },

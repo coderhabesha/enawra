@@ -9,7 +9,7 @@ class RegisterViewModel extends ChangeNotifier {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   bool validate = false;
   bool loading = false;
-  String firstName, lastName, email, country, password, cPassword;
+  String? firstName, lastName, email, country, password, cPassword;
   FocusNode firstNameFN = FocusNode();
   FocusNode lastNameFN = FocusNode();
   FocusNode emailFN = FocusNode();
@@ -20,7 +20,7 @@ class RegisterViewModel extends ChangeNotifier {
   AuthService auth = AuthService();
 
   register(BuildContext context) async {
-    FormState form = formKey.currentState;
+    FormState form = formKey.currentState!;
     form.save();
     if (!form.validate()) {
       validate = true;
@@ -32,8 +32,8 @@ class RegisterViewModel extends ChangeNotifier {
         loading = true;
         notifyListeners();
         try {
-          auth.createUser(firstName: firstName, lastName: lastName,
-            email: email, password: password, country: country);
+          auth.createUser(firstName: firstName!, lastName: lastName!,
+            email: email!, password: password!, country: country!);
 
           Navigator.pushReplacement(context,
             CupertinoPageRoute(

@@ -8,12 +8,11 @@ import 'package:enawra/models/user.dart';
 import 'package:enawra/services/post_service.dart';
 import 'package:enawra/utils/firebase.dart';
 import 'package:enawra/widgets/cached_image.dart';
-import 'package:flutter_icons/flutter_icons.dart';
-import 'package:link_text/link_text.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class Comments extends StatefulWidget {
-  final PostModel post;
+  final PostModel? post;
 
   Comments({this.post});
 
@@ -21,14 +20,14 @@ class Comments extends StatefulWidget {
 }
 
 class _CommentsState extends State<Comments> {
-  UserModel user;
+  UserModel? user;
 
   PostService services = PostService();
   final DateTime timestamp = DateTime.now();
   TextEditingController commentsTEC = TextEditingController();
 
   currentUserId() {
-    return firebaseAuth.currentUser.uid;
+    return firebaseAuth.currentUser!.uid;
   }
 
   @override
@@ -84,7 +83,7 @@ class _CommentsState extends State<Comments> {
                           controller: commentsTEC,
                           style: TextStyle(
                             fontSize: 15.0,
-                            color: Theme.of(context).textTheme.headline6.color,
+                            color: Theme.of(context).textTheme.headline6!.color,
                           ),
                           autofocus: true,
                           decoration: InputDecoration(
@@ -105,7 +104,7 @@ class _CommentsState extends State<Comments> {
                             hintStyle: TextStyle(
                               fontSize: 15.0,
                               color:
-                                  Theme.of(context).textTheme.headline6.color,
+                                  Theme.of(context).textTheme.headline6!.color,
                             ),
                           ),
                           maxLines: null,
@@ -115,9 +114,9 @@ class _CommentsState extends State<Comments> {
                             await services.uploadComment(
                               currentUserId(),
                               commentsTEC.text,
-                              widget.post.postId,
-                              widget.post.ownerId,
-                              widget.post.mediaUrl,
+                              widget.post!.postId!,
+                              widget.post!.ownerId!,
+                              widget.post!.mediaUrl!,
                             );
                             commentsTEC.clear();
                           },
@@ -148,10 +147,10 @@ class _CommentsState extends State<Comments> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          height: widget.post.mediaUrl.isNotEmpty ? 250.0 : 10.0,
+          height: widget.post!.mediaUrl!.isNotEmpty ? 250.0 : 10.0,
           width: MediaQuery.of(context).size.width - 20.0,
-          child: widget.post.mediaUrl.isNotEmpty ?
-            cachedNetworkImage(widget.post.mediaUrl) : null,
+          child: widget.post!.mediaUrl!.isNotEmpty ?
+            cachedNetworkImage(widget.post!.mediaUrl!) : null,
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -163,9 +162,8 @@ class _CommentsState extends State<Comments> {
                 children: [
                   SizedBox(
                     width: MediaQuery.of(context).size.width - 100,
-                    child: LinkText(
-                      widget.post.description,
-                      textStyle: TextStyle(
+                    child: Text(widget.post!.description!,
+                      style: TextStyle(
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -174,20 +172,20 @@ class _CommentsState extends State<Comments> {
                   Row(
                     children: [
                       Text(
-                        timeago.format(widget.post.timestamp.toDate()),
+                        timeago.format(widget.post!.timestamp!.toDate()),
                         style: TextStyle(),
                       ),
                       SizedBox(width: 3.0),
                       StreamBuilder(
                         stream: likesRef
-                            .where('postId', isEqualTo: widget.post.postId)
+                            .where('postId', isEqualTo: widget.post!.postId)
                             .snapshots(),
                         builder:
                             (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                           if (snapshot.hasData) {
-                            QuerySnapshot snap = snapshot.data;
+                            QuerySnapshot snap = snapshot.data!;
                             List<DocumentSnapshot> docs = snap.docs;
-                            return buildLikesCount(context, docs?.length ?? 0);
+                            return buildLikesCount(context, docs.length);
                           } else {
                             return buildLikesCount(context, 0);
                           }
@@ -211,13 +209,13 @@ class _CommentsState extends State<Comments> {
       shrinkWrap: true,
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       stream: commentRef
-          .doc(widget.post.postId)
+          .doc(widget.post!.postId)
           .collection('comments')
           .orderBy('timestamp', descending: true)
           .snapshots(),
       physics: NeverScrollableScrollPhysics(),
       itemBuilder: (_, DocumentSnapshot snapshot) {
-        CommentModel comments = CommentModel.fromJson(snapshot.data());
+        CommentModel comments = CommentModel.fromJson(snapshot.data() as Map<String, dynamic>);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -226,27 +224,27 @@ class _CommentsState extends State<Comments> {
               contentPadding: EdgeInsets.symmetric(horizontal: 0.0),
               leading: CircleAvatar(
                 radius: 20.0,
-                backgroundImage: comments.userDp.isNotEmpty ?
-                  NetworkImage(comments.userDp) : null,
+                backgroundImage: comments.userDp!.isNotEmpty ?
+                  NetworkImage(comments.userDp!) : null,
               ),
               title: Text(
-                comments.firstName + " " + comments.lastName,
+                comments.firstName! + " " + comments.lastName!,
                 style: TextStyle(fontWeight: FontWeight.w700),
               ),
               subtitle: Text(
-                timeago.format(comments.timestamp.toDate()),
+                timeago.format(comments.timestamp!.toDate()),
                 style: TextStyle(fontSize: 12.0),
               ),
               trailing: IconButton(
-                icon: Icon(Feather.more_horizontal),
-                onPressed: () => handleReport(context, comments, widget.post.postId, snapshot.id),
+                icon: Icon(Ionicons.open_outline),
+                onPressed: () => handleReport(context, comments, widget.post!.postId!, snapshot.id),
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 0.0),
-              child: LinkText(
-                comments.comment,
-                textStyle: TextStyle(fontWeight: FontWeight.w400),
+              child: Text(
+                comments.comment!,
+                style: TextStyle(fontWeight: FontWeight.w400),
               ),
             ),
             Divider()
@@ -287,31 +285,31 @@ class _CommentsState extends State<Comments> {
 
   reportComment(String cId) async {
     await commentRef
-        .doc(widget.post.postId)
+        .doc(widget.post!.postId)
         .collection("comments")
         .doc(cId)
         .update({'report': FieldValue.arrayUnion(<String>[currentUserId()])});
   }
 
   deleteComment(String cId) async {
-    commentRef.doc(widget.post.id).collection("comments").doc(cId).delete();
+    commentRef.doc(widget.post!.id).collection("comments").doc(cId).delete();
   }
 
   buildLikeButton() {
     return StreamBuilder(
       stream: likesRef
-          .where('postId', isEqualTo: widget.post.postId)
+          .where('postId', isEqualTo: widget.post!.postId)
           .where('userId', isEqualTo: currentUserId())
           .snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData) {
-          List<QueryDocumentSnapshot> docs = snapshot?.data?.docs ?? [];
+          List<QueryDocumentSnapshot> docs = snapshot.data?.docs ?? [];
           return IconButton(
             onPressed: () {
               if (docs.isEmpty) {
                 likesRef.add({
                   'userId': currentUserId(),
-                  'postId': widget.post.postId,
+                  'postId': widget.post!.postId,
                   'dateCreated': Timestamp.now(),
                 });
                 addLikesToNotification();
@@ -350,38 +348,38 @@ class _CommentsState extends State<Comments> {
   }
 
   addLikesToNotification() async {
-    bool isNotMe = currentUserId() != widget.post.ownerId;
+    bool isNotMe = currentUserId() != widget.post!.ownerId;
 
     if (isNotMe) {
       DocumentSnapshot doc = await usersRef.doc(currentUserId()).get();
-      user = UserModel.fromJson(doc.data());
+      user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
       notificationRef
-          .doc(widget.post.ownerId)
+          .doc(widget.post!.ownerId)
           .collection('notifications')
-          .doc(widget.post.postId)
+          .doc(widget.post!.postId)
           .set({
         "type": "like",
-        "firstName": user.firstName,
-        "lastName": user.lastName,
+        "firstName": user!.firstName,
+        "lastName": user!.lastName,
         "userId": currentUserId(),
-        "userDp": user.photoUrl,
-        "postId": widget.post.postId,
-        "mediaUrl": widget.post.mediaUrl,
+        "userDp": user!.photoUrl,
+        "postId": widget.post!.postId,
+        "mediaUrl": widget.post!.mediaUrl,
         "timestamp": timestamp,
       });
     }
   }
 
   removeLikeFromNotification() async {
-    bool isNotMe = currentUserId() != widget.post.ownerId;
+    bool isNotMe = currentUserId() != widget.post!.ownerId;
 
     if (isNotMe) {
       DocumentSnapshot doc = await usersRef.doc(currentUserId()).get();
-      user = UserModel.fromJson(doc.data());
+      user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
       notificationRef
-          .doc(widget.post.ownerId)
+          .doc(widget.post!.ownerId)
           .collection('notifications')
-          .doc(widget.post.postId)
+          .doc(widget.post!.postId)
           .get()
           .then((doc) => {
                 if (doc.exists) {doc.reference.delete()}

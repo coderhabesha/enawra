@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ActivityModel {
-  String type;
-  String firstName;
-  String lastName;
-  String userId;
-  String userDp;
-  String postId;
-  String mediaUrl;
-  String commentData;
-  Timestamp timestamp;
+  String? type;
+  String? firstName;
+  String? lastName;
+  String? userId;
+  String? userDp;
+  String? postId;
+  String? mediaUrl;
+  String? commentData;
+  Timestamp? timestamp;
   ActivityModel(this.type, this.firstName, this.lastName, this.userId, this.userDp, this.postId,
       this.commentData, this.mediaUrl, this.timestamp);
 

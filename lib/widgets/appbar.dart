@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+import 'package:ionicons/ionicons.dart';
+// import 'package:flutter_icons/flutter_icons.dart';
 
 AppBar header(context) {
   return AppBar(
@@ -7,7 +8,7 @@ AppBar header(context) {
     centerTitle: true,
     actions: [Padding(
       padding: const EdgeInsets.only(right:20.0),
-      child: Icon(Feather.bell),
+      child: Icon(Ionicons.barbell),
     )],
   );
 }

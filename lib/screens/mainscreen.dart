@@ -2,12 +2,13 @@ import 'package:animations/animations.dart';
 import 'package:enawra/pages/feeds_public.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+// import 'package:flutter_icons/flutter_icons.dart';
 import 'package:enawra/chats/recent_chats.dart';
 import 'package:enawra/components/fab_container.dart';
 import 'package:enawra/pages/notification.dart';
 import 'package:enawra/pages/feeds.dart';
 import 'package:enawra/pages/search_posts.dart';
+import 'package:ionicons/ionicons.dart';
 
 class TabScreen extends StatefulWidget {
   @override
@@ -20,7 +21,7 @@ class _TabScreenState extends State<TabScreen> {
   List pages = [
     {
       'title': 'Home',
-      'icon': Feather.home,
+      'icon': Ionicons.home,
       'page': Timeline(),
       'index': 0,
     },
@@ -32,13 +33,13 @@ class _TabScreenState extends State<TabScreen> {
     },
     {
       'title': 'unsee',
-      'icon': Feather.plus_circle,
+      'icon': Ionicons.unlink_outline,
       'page': Text('nes'),
       'index': 2,
     },
     {
       'title': 'Search',
-      'icon': Feather.search,
+      'icon': Ionicons.search,
       'page': TimelinePublic(),
       'index': 3,
     },
@@ -103,7 +104,7 @@ class _TabScreenState extends State<TabScreen> {
       width: 45.0,
       // ignore: missing_required_param
       child: FabContainer(
-        icon: Feather.plus,
+        icon: Ionicons.add_circle,
         mini: true,
       ),
     );

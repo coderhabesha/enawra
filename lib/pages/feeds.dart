@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:enawra/screens/view_image.dart';
 import 'package:enawra/services/push_notifications_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -27,9 +26,9 @@ class _TimelineState extends State<Timeline> {
 
   int documentLimit = 50;
 
-  DocumentSnapshot lastDocument;
+  DocumentSnapshot? lastDocument;
 
-  ScrollController _scrollController;
+  ScrollController? _scrollController;
 
   getPosts() async {
     final firebaseMessaging = PushNotificationsService();
@@ -45,22 +44,22 @@ class _TimelineState extends State<Timeline> {
     setState(() {
       isLoading = true;
     });
-    QuerySnapshot querySnapshot;
+    QuerySnapshot? querySnapshot;
 
-    List<dynamic> f;
+    List<dynamic>? f;
 
-    await followingRef.doc(firebaseAuth.currentUser.uid).get().then((value) => {
-          if (value.exists) {f = value['following'], f.add(currentUserId())}
+    await followingRef.doc(firebaseAuth.currentUser!.uid).get().then((value) => {
+          if (value.exists) {f = value['following'], f!.add(currentUserId())}
         });
 
 
     var chunks = [];
     int chunkSize = 10;
 
-    if(f != null && f.isNotEmpty) {
-      for (var i = 0; i < f.length; i += chunkSize) {
+    if(f != null && f!.isNotEmpty) {
+      for (var i = 0; i < f!.length; i += chunkSize) {
         chunks.add(
-            f.sublist(i, i + chunkSize > f.length ? f.length : i + chunkSize));
+            f!.sublist(i, i + chunkSize > f!.length ? f!.length : i + chunkSize));
       }
 
 
@@ -86,7 +85,7 @@ class _TimelineState extends State<Timeline> {
           querySnapshot = await postRef
               .where('ownerId', whereIn: chunk)
               .orderBy('timestamp', descending: true)
-              .startAfterDocument(lastDocument)
+              .startAfterDocument(lastDocument!)
               .limit(documentLimit)
               .get();
           if (querySnapshot != null) {
@@ -111,8 +110,8 @@ class _TimelineState extends State<Timeline> {
     super.initState();
     getPosts();
     _scrollController?.addListener(() {
-      double maxScroll = _scrollController.position.maxScrollExtent;
-      double currentScroll = _scrollController.position.pixels;
+      double maxScroll = _scrollController!.position.maxScrollExtent;
+      double currentScroll = _scrollController!.position.pixels;
       double delta = MediaQuery.of(context).size.height * 0.25;
       if (maxScroll - currentScroll <= delta) {
         getPosts();
@@ -143,7 +142,7 @@ class _TimelineState extends State<Timeline> {
                 context,
                 CupertinoPageRoute(
                   builder: (_) =>
-                      Profile(profileId: firebaseAuth.currentUser.uid),
+                      Profile(profileId: firebaseAuth.currentUser!.uid),
                 ),
               );
             },
@@ -157,8 +156,7 @@ class _TimelineState extends State<Timeline> {
               controller: _scrollController,
               itemCount: post.length,
               itemBuilder: (context, index) {
-                internetChecker(context);
-                PostModel posts = PostModel.fromJson(post[index].data());
+                PostModel posts = PostModel.fromJson(post[index].data() as Map<String, dynamic>);
                 return Padding(
                   padding: const EdgeInsets.all(3.0),
                   child: UserPost(post: posts),
@@ -180,13 +178,6 @@ class _TimelineState extends State<Timeline> {
         ),
       ),
     );
-  }
-
-  internetChecker(context) async {
-    bool result = await DataConnectionChecker().hasConnection;
-    if (result == false) {
-      showInSnackBar('No Internet Connection', context);
-    }
   }
 
   void showInSnackBar(String value, context) {

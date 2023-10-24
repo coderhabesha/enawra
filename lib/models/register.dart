@@ -1,13 +1,13 @@
 
 class Register {
-  String firstName;
-  String lastName;
-  String email;
-  String gender;
-  String country;
-  String password;
-  String passwordConfirmation;
-  bool publicEmail = false;
+  String? firstName;
+  String? lastName;
+  String? email;
+  String? gender;
+  String? country;
+  String? password;
+  String? passwordConfirmation;
+  bool? publicEmail = false;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();

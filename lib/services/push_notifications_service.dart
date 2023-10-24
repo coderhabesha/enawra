@@ -46,8 +46,8 @@ class PushNotificationsService {
       }
 
       // or do other work
-      titleCtrl.sink.add(message.notification.title);
-      bodyCtrl.sink.add(message.notification.body);
+      titleCtrl.sink.add(message.notification!.title!);
+      bodyCtrl.sink.add(message.notification!.body!);
     });
   }
 
@@ -63,14 +63,13 @@ class PushNotificationsService {
       }
 
       // or do other work
-      titleCtrl.sink.add(message.notification.title);
-      bodyCtrl.sink.add(message.notification.body);
+      titleCtrl.sink.add(message.notification!.title!);
+      bodyCtrl.sink.add(message.notification!.body!);
     });
   }
 
   terminatedNotifier() async {
-    RemoteMessage initialMessage = await FirebaseMessaging.instance
-        .getInitialMessage();
+    RemoteMessage initialMessage = await FirebaseMessaging.instance.getInitialMessage() as RemoteMessage;
 
     if (initialMessage != null) {
       if (initialMessage.data.containsKey('data')) {
@@ -83,8 +82,8 @@ class PushNotificationsService {
       }
 
       // or do other work
-      titleCtrl.sink.add(initialMessage.notification.title);
-      bodyCtrl.sink.add(initialMessage.notification.body);
+      titleCtrl.sink.add(initialMessage.notification!.title!);
+      bodyCtrl.sink.add(initialMessage.notification!.body!);
     }
   }
 

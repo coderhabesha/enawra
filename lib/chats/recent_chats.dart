@@ -36,21 +36,21 @@ class Chats extends StatelessWidget {
         SizedBox(width: 20.0),
       ],
       ),
-      body: StreamBuilder(
+      body: StreamBuilder<QuerySnapshot>(
         stream: userChatsStream('${viewModel.user?.uid ?? ""}'),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            List chatList = snapshot.data.docs;
+            List chatList = snapshot.data!.docs;
             if (chatList.isNotEmpty) {
               return ListView.separated(
                 itemCount: chatList.length,
                 itemBuilder: (BuildContext context, int index) {
                   DocumentSnapshot chatListSnapshot = chatList[index];
-                  return StreamBuilder(
+                  return StreamBuilder<QuerySnapshot>(
                     stream: messageListStream(chatListSnapshot.id),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        List messages = snapshot.data.docs;
+                        List messages = snapshot.data!.docs;
                         Message message = Message.fromJson(
                           messages.first.data(),
                         );
@@ -61,11 +61,11 @@ class Chats extends StatelessWidget {
                         String recipient = users[0];
                         return ChatItem(
                           userId: recipient,
-                          messageCount: messages?.length,
-                          msg: message?.content,
-                          time: message?.time,
+                          messageCount: messages.length,
+                          msg: message.content,
+                          time: message.time,
                           chatId: chatListSnapshot.id,
-                          type: message?.type,
+                          type: message.type,
                           currentUserId: viewModel.user?.uid ?? "",
                         );
                       } else {

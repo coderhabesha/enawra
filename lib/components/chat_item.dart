@@ -10,16 +10,16 @@ import 'package:enawra/utils/firebase.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatItem extends StatelessWidget {
-  final String userId;
-  final Timestamp time;
-  final String msg;
-  final int messageCount;
-  final String chatId;
-  final MessageType type;
-  final String currentUserId;
+  final String? userId;
+  final Timestamp? time;
+  final String? msg;
+  final int? messageCount;
+  final String? chatId;
+  final MessageType? type;
+  final String? currentUserId;
 
   ChatItem({
-    Key key,
+    Key? key,
     @required this.userId,
     @required this.time,
     @required this.msg,
@@ -35,8 +35,8 @@ class ChatItem extends StatelessWidget {
       stream: usersRef.doc('$userId').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          DocumentSnapshot documentSnapshot = snapshot.data;
-          UserModel user = UserModel.fromJson(documentSnapshot.data());
+          DocumentSnapshot documentSnapshot = snapshot.data as DocumentSnapshot;
+          UserModel user = UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
 
           return ListTile(
             contentPadding:
@@ -44,7 +44,7 @@ class ChatItem extends StatelessWidget {
             leading: Stack(
               children: <Widget>[
                 CircleAvatar(
-                  backgroundImage: user.photoUrl.isNotEmpty ? CachedNetworkImageProvider('${user?.photoUrl}') : null,
+                  backgroundImage: user.photoUrl!.isNotEmpty ? CachedNetworkImageProvider('${user.photoUrl}') : null,
                   radius: 25.0,
                 ),
                 Positioned(
@@ -93,7 +93,7 @@ class ChatItem extends StatelessWidget {
                   SizedBox(height: 10),
                   TextTime(
                     child: Text(
-                      "${timeago.format(time.toDate())}",
+                      "${timeago.format(time!.toDate())}",
                       style: TextStyle(
                         fontWeight: FontWeight.w300,
                         fontSize: 11,
@@ -130,17 +130,17 @@ class ChatItem extends StatelessWidget {
       stream: messageBodyStream(),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.hasData) {
-          DocumentSnapshot snap = snapshot.data;
-          // Map usersReads = snap.get('reads') ?? new Map();
-          // int readCount = usersReads[currentUserId] ?? 0;
-          int counter = messageCount - messageCount;
+          DocumentSnapshot snap = snapshot.data as DocumentSnapshot<Object?>;
+          Map usersReads = snap.get('reads') ?? new Map();
+          int readCount = usersReads[currentUserId] ?? 0;
+          int counter = messageCount! - readCount;
           if (counter == 0) {
             return SizedBox();
           } else {
             return Container(
               padding: EdgeInsets.all(1),
               decoration: BoxDecoration(
-                color: Theme.of(context).accentColor,
+                color: Theme.of(context).colorScheme.secondary,
                 borderRadius: BorderRadius.circular(6),
               ),
               constraints: BoxConstraints(
